@@ -1,0 +1,818 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Un regalino per Alessandra</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --coral: #FF6B6B;
+    --gold: #FFD166;
+    --dusk: #6B4E71;
+    --sky: #A8DADC;
+    --cream: #FFF9F0;
+    --pink: #FF6FA0;
+    --turq: #06D6A0;
+    --purple: #7B2CBF;
+    --ink: #2B2140;
+    --lego-red:#D62828;
+    --lego-yellow:#F7B32B;
+    --lego-blue:#1E88E5;
+    --lego-green:#2E8B57;
+    --lego-orange:#E4572E;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html,body{
+    margin:0;padding:0;width:100%;height:100%;
+    font-family:'Quicksand',sans-serif;
+    color:var(--ink);
+    overscroll-behavior:none;
+  }
+  body{position:fixed;inset:0;overflow:hidden;}
+
+  .page{
+    position:absolute;inset:0;
+    width:100%;height:100%;
+    display:none;
+    overflow-y:auto;
+    -webkit-overflow-scrolling:touch;
+  }
+  .page.active{display:block;}
+  .page.quiz-page.active{
+    display:flex;
+    align-items:center;justify-content:center;
+  }
+
+  /* ---------- PAGINA 1 ---------- */
+  #page1{ background:#0d0818; }
+  #page1 svg#sceneSvg{
+    position:absolute;inset:0;width:100%;height:100%;display:block;
+  }
+
+  .p1-overlay{
+    position:relative;z-index:5;
+    display:flex;flex-direction:column;align-items:center;justify-content:flex-start;
+    min-height:100%;
+    padding:6vh 20px 40px;
+  }
+  .p1-text{
+    max-width:640px;
+    text-align:center;
+    font-family:'Quicksand',sans-serif;
+    font-weight:500;
+    font-size:clamp(1.05rem, 3vw, 1.35rem);
+    line-height:1.55;
+    color:#fff8ec;
+    text-shadow:0 2px 14px rgba(0,0,0,0.55);
+  }
+  .p1-text .nome{ font-weight:700;color:var(--gold); }
+
+  #noBtn{
+    display:block;margin:30px auto 0;
+    background:var(--coral);
+    color:#fff;border:none;
+    font-family:'Fredoka',sans-serif;
+    font-weight:600;font-size:1.05rem;
+    padding:12px 34px;border-radius:40px;
+    cursor:pointer;
+    box-shadow:0 6px 0 #b93f3f, 0 8px 18px rgba(0,0,0,0.3);
+    transition:transform .15s ease;
+  }
+  #noBtn:hover{transform:translateY(2px);box-shadow:0 4px 0 #b93f3f, 0 6px 14px rgba(0,0,0,0.3);}
+
+  #noText{
+    display:none;
+    text-align:center;margin-top:26px;
+    font-family:'Fredoka',sans-serif;font-size:1.3rem;
+    color:#fff2d6;text-shadow:0 2px 10px rgba(0,0,0,0.5);
+  }
+
+  .flower-btn{
+    all:unset;
+    position:absolute;z-index:6;
+    display:flex;flex-direction:column;align-items:center;gap:0px;
+    cursor:pointer;
+    touch-action:manipulation;
+    padding:12px;
+    margin:-12px;
+  }
+  .flower-btn .fl-emoji{
+    font-size:9px;line-height:1;
+    filter: sepia(1) saturate(2) hue-rotate(45deg) brightness(0.5) contrast(0.85);
+    opacity:0.8;
+  }
+  .flower-btn .fl-label{
+    font-family:'Fredoka',sans-serif;font-weight:600;font-size:6px;
+    color:rgba(230,225,190,0.4);
+    background:transparent;
+    padding:0;border-radius:0;line-height:1.1;
+  }
+  .flower-btn:focus-visible .fl-emoji{outline:1px dashed rgba(255,255,255,0.6);}
+
+  /* ---------- QUIZ (pagine 2-6) ---------- */
+  .quiz-page{
+    background:linear-gradient(135deg, var(--purple) 0%, var(--pink) 55%, var(--gold) 100%);
+    padding:24px 12px;
+  }
+  .quiz-card{
+    background:var(--cream);
+    border-radius:28px;
+    max-width:680px;width:100%;
+    max-height:92vh;overflow-y:auto;
+    padding:28px 26px 30px;
+    box-shadow:0 20px 50px rgba(0,0,0,0.35);
+    position:relative;
+    margin:auto;
+  }
+  .quiz-step{
+    font-family:'Fredoka',sans-serif;
+    font-weight:600;color:var(--purple);
+    font-size:.9rem;letter-spacing:.06em;text-transform:uppercase;
+    margin-bottom:8px;
+  }
+  .quiz-question{
+    font-family:'Quicksand',sans-serif;
+    font-weight:600;font-size:1.08rem;line-height:1.5;
+    color:var(--ink);
+    margin-bottom:22px;
+  }
+  .answers{
+    display:grid;grid-template-columns:1fr 1fr;gap:14px;
+  }
+  @media (max-width:560px){ .answers{grid-template-columns:1fr;} }
+  .answer-btn{
+    font-family:'Quicksand',sans-serif;font-weight:600;
+    background:#fff;border:3px solid var(--sky);
+    border-radius:16px;padding:14px 16px;
+    font-size:.95rem;text-align:left;cursor:pointer;
+    transition:all .15s ease;
+    color:var(--ink);
+  }
+  .answer-btn:hover{border-color:var(--pink);transform:translateY(-2px);}
+  .answer-btn.correct{background:var(--turq);border-color:var(--turq);color:#fff;}
+  .answer-btn.wrong{background:var(--coral);border-color:var(--coral);color:#fff;}
+  .answer-btn:disabled{cursor:default;}
+
+  .lego-toast{
+    display:none;
+    margin-top:18px;padding:12px 16px;border-radius:14px;
+    background:var(--gold);color:var(--ink);
+    font-family:'Fredoka',sans-serif;font-weight:600;
+    text-align:center;
+  }
+
+  /* ---------- SCREAM OVERLAY ---------- */
+  #screamOverlay{
+    position:fixed;inset:0;z-index:999;
+    background:rgba(6,3,8,0.94);
+    display:none;
+    align-items:center;justify-content:center;
+    flex-direction:column;
+    gap:26px;
+  }
+  #screamOverlay.show{display:flex;}
+  .scream-face-wrap{ animation: spin10 10s linear; }
+  @keyframes spin10{ from{transform:rotate(0deg);} to{transform:rotate(720deg);} }
+  .scream-text{
+    font-family:'Fredoka',sans-serif;font-weight:700;
+    font-size:clamp(1.1rem,4vw,1.5rem);text-align:center;color:var(--coral);
+    max-width:600px;padding:0 20px;
+    text-shadow:0 0 12px rgba(255,107,107,0.6);
+  }
+
+  /* ---------- PAGINA FINALE - ASSEMBLAGGIO ---------- */
+  #pageAssembly{
+    background:linear-gradient(160deg, var(--sky) 0%, var(--cream) 60%, #ffe3b0 100%);
+  }
+  .assembly-header{
+    text-align:center;padding:20px 16px 4px;
+    font-family:'Fredoka',sans-serif;
+  }
+  .assembly-header h1{font-size:clamp(1.15rem,4vw,1.5rem);color:var(--purple);margin:0 0 6px;}
+  .assembly-header p{font-family:'Quicksand',sans-serif;font-weight:500;color:var(--ink);margin:0;font-size:.9rem;}
+
+  #assemblyArea{
+    position:relative;
+    margin:14px auto 0;
+    width:min(92vw, 340px);
+    height:min(68vh, 520px);
+    background:rgba(255,255,255,0.35);
+    border:3px dashed rgba(123,44,191,0.25);
+    border-radius:20px;
+    overflow:hidden;
+  }
+  .lego-piece{
+    position:absolute;
+    cursor:grab;
+    touch-action:none;
+    border-radius:9px;
+    transition:box-shadow .15s ease, filter .15s ease;
+    box-shadow:0 6px 0 rgba(0,0,0,0.25), 0 9px 14px rgba(0,0,0,0.22), inset 0 3px 4px rgba(255,255,255,0.35), inset 0 -6px 8px rgba(0,0,0,0.18);
+  }
+  .lego-piece.locked{cursor:default;box-shadow:inset 0 3px 4px rgba(255,255,255,0.3), inset 0 -6px 8px rgba(0,0,0,0.18), 0 3px 0 rgba(0,0,0,0.18);}
+  .lego-piece.snap-ready{ filter:brightness(1.08); box-shadow:0 0 0 4px rgba(6,214,160,0.75), 0 6px 0 rgba(0,0,0,0.22), inset 0 3px 4px rgba(255,255,255,0.35); }
+  .lego-piece .studs{
+    position:absolute;top:-9px;left:0;right:0;
+    display:flex;justify-content:center;gap:8px;
+  }
+  .lego-piece .stud{
+    width:14px;height:14px;border-radius:50%;
+    background:inherit;filter:brightness(1.25);
+    border:1px solid rgba(0,0,0,0.18);
+    box-shadow:inset 0 -2px 2px rgba(0,0,0,0.25), inset 0 2px 2px rgba(255,255,255,0.4);
+  }
+  .piece-shaftlow{background:linear-gradient(135deg, #ef4b4b 0%, var(--lego-red) 45%, #9c1c1c 100%);}
+  .piece-shaftup{background:linear-gradient(135deg, #ffd873 0%, var(--lego-yellow) 45%, #b9791a 100%);}
+  .piece-head{
+    background:linear-gradient(150deg, #5aa7ef 0%, var(--lego-blue) 50%, #12558f 100%);
+    border-radius:50% 50% 22px 22px;
+  }
+  .piece-ballL, .piece-ballR{
+    background:radial-gradient(circle at 35% 30%, #6fd39a 0%, var(--lego-green) 55%, #16512f 100%);
+    border-radius:50%;
+  }
+  .piece-ballL .studs, .piece-ballR .studs{display:none;}
+  .piece-head .studs{display:none;}
+
+  #successBox{
+    display:none;
+    text-align:center;margin-top:16px;
+    font-family:'Fredoka',sans-serif;font-size:1.15rem;
+    color:var(--purple);padding:0 16px;
+  }
+
+  @keyframes confettiFall{
+    0%{ transform: translate(0,0) rotate(var(--rot0, 0deg)); opacity:1; }
+    100%{ transform: translate(var(--drift, 0px), 110vh) rotate(calc(var(--rot0, 0deg) + 640deg)); opacity:0.85; }
+  }
+
+  @media (max-width:400px){
+    .quiz-card{padding:22px 18px 24px;}
+  }
+</style>
+</head>
+<body>
+
+  <!-- PAGINA 1 -->
+  <section class="page active" id="page1">
+    <svg id="sceneSvg" viewBox="0 0 800 600" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="skyGrad" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#241736"/>
+          <stop offset="18%" stop-color="#4a2f57"/>
+          <stop offset="38%" stop-color="#c1567f"/>
+          <stop offset="55%" stop-color="#ff8c5a"/>
+          <stop offset="68%" stop-color="#ffd166"/>
+          <stop offset="78%" stop-color="#ffe9a8"/>
+          <stop offset="100%" stop-color="#f4d488"/>
+        </linearGradient>
+        <radialGradient id="sunGrad" cx="50%" cy="50%" r="50%">
+          <stop offset="0%" stop-color="#fff6d0"/>
+          <stop offset="45%" stop-color="#ffd166"/>
+          <stop offset="100%" stop-color="rgba(255,140,90,0)"/>
+        </radialGradient>
+      </defs>
+
+      <rect x="0" y="0" width="800" height="600" fill="url(#skyGrad)"/>
+
+      <!-- sole -->
+      <circle cx="400" cy="270" r="230" fill="url(#sunGrad)" opacity="0.9"/>
+      <circle cx="400" cy="270" r="70" fill="#fff3d2"/>
+
+      <!-- nuvole -->
+      <g opacity="0.55" fill="#fbd8c0">
+        <ellipse cx="140" cy="140" rx="70" ry="18"/>
+        <ellipse cx="190" cy="130" rx="50" ry="14"/>
+        <ellipse cx="620" cy="110" rx="80" ry="20"/>
+        <ellipse cx="680" cy="125" rx="45" ry="13"/>
+      </g>
+
+      <!-- colline lontane -->
+      <path d="M0,360 C120,320 220,340 340,320 C460,300 560,330 680,310 C740,300 780,310 800,300 L800,600 L0,600 Z" fill="#7a5570" opacity="0.55"/>
+      <!-- colline medie -->
+      <path d="M0,410 C100,370 240,400 360,380 C480,360 600,400 720,380 C760,374 780,378 800,372 L800,600 L0,600 Z" fill="#5c4560" opacity="0.7"/>
+
+      <!-- alberi silhouette sulle colline medie -->
+      <g fill="#3f2f47" opacity="0.75">
+        <ellipse cx="120" cy="392" rx="16" ry="24"/>
+        <rect x="117" y="408" width="6" height="14"/>
+        <ellipse cx="680" cy="386" rx="18" ry="26"/>
+        <rect x="676" y="404" width="7" height="16"/>
+        <ellipse cx="640" cy="396" rx="12" ry="18"/>
+        <rect x="637" y="408" width="5" height="12"/>
+      </g>
+
+      <!-- collina in primo piano / prato -->
+      <path d="M0,470 C150,430 300,460 400,445 C520,428 620,460 800,435 L800,600 L0,600 Z" fill="#3a2e22"/>
+      <path d="M0,500 C180,470 340,495 500,478 C620,466 720,486 800,470 L800,600 L0,600 Z" fill="#26201a"/>
+
+      <!-- cinque amiche mano nella mano, in cammino -->
+      <g id="friends" transform="translate(300,455)">
+        <!-- linee mani unite -->
+        <g stroke="#1c150f" stroke-width="4" stroke-linecap="round" opacity="0.9">
+          <line x1="8"  y1="-38" x2="30"  y2="-40"/>
+          <line x1="48" y1="-40" x2="70"  y2="-42"/>
+          <line x1="88" y1="-42" x2="110" y2="-40"/>
+          <line x1="128" y1="-40" x2="150" y2="-38"/>
+        </g>
+        <!-- figura 1 -->
+        <g transform="translate(0,0)" fill="#1c150f">
+          <circle cx="0" cy="-52" r="9"/>
+          <path d="M-9,-40 C-11,-15 -8,0 -8,10 L8,10 C8,0 11,-15 9,-40 Z"/>
+        </g>
+        <!-- figura 2 -->
+        <g transform="translate(38,-3)" fill="#241a12">
+          <circle cx="0" cy="-55" r="9.5"/>
+          <path d="M-10,-42 C-12,-14 -9,2 -9,12 L9,12 C9,2 12,-14 10,-42 Z"/>
+        </g>
+        <!-- figura 3 (centrale, un po' più alta) -->
+        <g transform="translate(78,-6)" fill="#150f0a">
+          <circle cx="0" cy="-58" r="10"/>
+          <path d="M-10.5,-45 C-13,-15 -9,3 -9,14 L9,14 C9,3 13,-15 10.5,-45 Z"/>
+        </g>
+        <!-- figura 4 -->
+        <g transform="translate(118,-3)" fill="#241a12">
+          <circle cx="0" cy="-55" r="9.5"/>
+          <path d="M-10,-42 C-12,-14 -9,2 -9,12 L9,12 C9,2 12,-14 10,-42 Z"/>
+        </g>
+        <!-- figura 5 -->
+        <g transform="translate(156,0)" fill="#1c150f">
+          <circle cx="0" cy="-52" r="9"/>
+          <path d="M-9,-40 C-11,-15 -8,0 -8,10 L8,10 C8,0 11,-15 9,-40 Z"/>
+        </g>
+      </g>
+
+      <!-- cespugli in primo piano -->
+      <g fill="#171109">
+        <ellipse cx="60" cy="560" rx="46" ry="20"/>
+        <ellipse cx="720" cy="555" rx="60" ry="24"/>
+        <ellipse cx="770" cy="575" rx="40" ry="16"/>
+      </g>
+    </svg>
+
+    <div class="p1-overlay">
+      <div class="p1-text">
+        Carissima <span class="nome">Alessandra</span>, abbiamo un regalino per te, ma prima dovrai guadagnartelo!<br><br>
+        Sei pronta? Se sei altamente motivata, clicca "Sì".
+      </div>
+
+      <button id="noBtn">No</button>
+      <div id="noText">Vabbè, allora niente cara, sarà per l'anno prossimo.</div>
+    </div>
+
+    <!-- il bottone "Sì" è un fiorellino nel prato, posizionato via JS -->
+    <button class="flower-btn" id="yesBtn" aria-label="Sì">
+      <span class="fl-emoji">🌼</span><span class="fl-label">Sì</span>
+    </button>
+  </section>
+
+  <!-- PAGINE QUIZ (contenitore riutilizzato per le 5 domande) -->
+  <section class="page quiz-page" id="quizPage">
+    <div class="quiz-card">
+      <div class="quiz-step" id="quizStep"></div>
+      <div class="quiz-question" id="quizQuestion"></div>
+      <div class="answers" id="quizAnswers"></div>
+      <div class="lego-toast" id="legoToast">🧱 Hai guadagnato un pezzo Lego!</div>
+    </div>
+  </section>
+
+  <!-- PAGINA FINALE - ASSEMBLAGGIO -->
+  <section class="page" id="pageAssembly">
+    <div class="assembly-header">
+      <h1>Ultima prova: assembla il tuo regalo</h1>
+      <p>Trascina i pezzi Lego e avvicinali alla loro posizione: si incastreranno da soli.</p>
+    </div>
+    <div id="assemblyArea"></div>
+    <div id="successBox">🎁 Ecco il tuo regalino... interpretalo come vuoi. 😏</div>
+  </section>
+
+  <!-- OVERLAY URLO -->
+  <div id="screamOverlay">
+    <div class="scream-face-wrap">
+      <svg width="190" height="238" viewBox="0 0 240 300" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <radialGradient id="bgGrad" cx="50%" cy="38%" r="75%">
+            <stop offset="0%" stop-color="#5a141c"/>
+            <stop offset="55%" stop-color="#280a10"/>
+            <stop offset="100%" stop-color="#070306"/>
+          </radialGradient>
+          <radialGradient id="skinGrad" cx="48%" cy="32%" r="72%">
+            <stop offset="0%" stop-color="#dbe0c2"/>
+            <stop offset="55%" stop-color="#b7bd93"/>
+            <stop offset="100%" stop-color="#767c58"/>
+          </radialGradient>
+          <radialGradient id="eyeGrad" cx="50%" cy="30%" r="75%">
+            <stop offset="0%" stop-color="#2a0808"/>
+            <stop offset="100%" stop-color="#000000"/>
+          </radialGradient>
+        </defs>
+
+        <rect x="0" y="0" width="240" height="300" fill="url(#bgGrad)"/>
+
+        <!-- crepe/lampi nell'oscurità -->
+        <g stroke="#4a0e14" stroke-width="3" opacity="0.55" fill="none">
+          <path d="M0,45 L58,72 L22,110 L88,145"/>
+          <path d="M240,65 L182,92 L218,128 L152,158"/>
+          <path d="M0,240 L50,220 L30,270 L70,255"/>
+        </g>
+
+        <!-- mani ossute premute sul volto -->
+        <path d="M64,168 C38,150 33,104 56,72 C66,90 66,122 68,152 C70,174 68,188 64,168 Z" fill="url(#skinGrad)"/>
+        <path d="M176,168 C202,150 207,104 184,72 C174,90 174,122 172,152 C170,174 172,188 176,168 Z" fill="url(#skinGrad)"/>
+        <g stroke="#5c6240" stroke-width="2" opacity="0.65" fill="none">
+          <path d="M52,110 Q58,128 54,150"/>
+          <path d="M188,110 Q182,128 186,150"/>
+          <path d="M60,95 Q64,112 60,132"/>
+          <path d="M180,95 Q176,112 180,132"/>
+        </g>
+
+        <!-- testa scarna e allungata -->
+        <path d="M120,44 C164,44 184,88 179,140 C176,178 172,205 152,232 C141,246 130,255 120,257 C110,255 99,246 88,232 C68,205 64,178 61,140 C56,88 76,44 120,44 Z" fill="url(#skinGrad)"/>
+
+        <!-- guance scavate -->
+        <path d="M84,158 C78,185 84,212 101,229 C92,207 90,180 96,158 Z" fill="#5f663f" opacity="0.55"/>
+        <path d="M156,158 C162,185 156,212 139,229 C148,207 150,180 144,158 Z" fill="#5f663f" opacity="0.55"/>
+
+        <!-- fronte corrucciata -->
+        <path d="M84,98 Q102,80 120,92" stroke="#3a3a20" stroke-width="5" fill="none" stroke-linecap="round"/>
+        <path d="M120,92 Q138,80 156,98" stroke="#3a3a20" stroke-width="5" fill="none" stroke-linecap="round"/>
+
+        <!-- occhi vuoti e spaventati -->
+        <ellipse cx="100" cy="124" rx="17" ry="22" fill="url(#eyeGrad)"/>
+        <ellipse cx="140" cy="124" rx="17" ry="22" fill="url(#eyeGrad)"/>
+        <circle cx="100" cy="130" r="2.4" fill="#8a1414" opacity="0.85"/>
+        <circle cx="140" cy="130" r="2.4" fill="#8a1414" opacity="0.85"/>
+
+        <!-- naso incavato -->
+        <path d="M112,138 Q120,162 106,172 Q120,180 134,172 Q120,162 128,138 Z" fill="#8b9163" opacity="0.65"/>
+
+        <!-- bocca spalancata con denti -->
+        <path d="M78,196 Q120,172 162,196 Q168,232 120,255 Q72,232 78,196 Z" fill="#170606"/>
+        <path d="M86,201 Q120,184 154,201 Q157,220 120,232 Q83,220 86,201 Z" fill="#3a0d0d"/>
+        <g fill="#e7e2cc">
+          <path d="M86,199 L93,211 L100,199 Z"/>
+          <path d="M103,196 L110,210 L117,196 Z"/>
+          <path d="M123,196 L130,210 L137,196 Z"/>
+          <path d="M140,199 L147,211 L154,199 Z"/>
+        </g>
+      </svg>
+    </div>
+    <div class="scream-text">COME HAI POTUTO RINNEGARE LA TUA ESISTENZA!!!</div>
+  </div>
+
+<script>
+/* ======================= STATO GLOBALE ======================= */
+const state = {
+  currentQuizIndex: 0,
+  legoCount: 0
+};
+
+const questions = [
+  {
+    text: `Accadde una volta che tu, animata da un sentimento focoso ed irriducibile, abbia sentito la necessità di rivolgerti con amorevoli e significative parole nei confronti di colei che, in un momento di petulanza, narrò di questioni per te intime ad un'amicizia in comune. Quale fu l'espressione che scegliesti, tratta dall'arcinoto manuale transalpino "Le bonnes manières"?`,
+    options: ["A. Ma chèrie carissima", "B. Gentil e Candida Nobildonna", "C. Cogliona", "D. Graziosissima Milady"],
+    correct: 2
+  },
+  {
+    text: `C'è una tua peculiarità che le tue amiche Coglione adorano perculare senza alcuna pietà né delicatezza di sorta, talché potrebbero, per detta peculiarità, deriderti anche davanti ad una platea di ospiti bendisposta ad accordarti l'elisir di lunga vita solo a condizione che tu condivida il resto dei tuoi giorni con rispettabili compagnie. Di cosa si tratta?`,
+    options: ["A. La tua morbida chiappetta", "B. Le tue dita bidirezionali", "C. La lunga treccia della tua peluria anale", "D. Le tue flautelenze killer"],
+    correct: 1
+  },
+  {
+    text: `A lungo dovesti dissimulare le tue frequentazioni onde poter tenere al sicuro la tua identità di leccapatate. A cosa ti portava questa necessità?`,
+    options: ["A. A fingere impegni rivolti a racimolare una fonte di sostentamento", "B. A professare il credo unico e imperioso della vita monastica", "C. A dire che andavi a trovare amiche in realtà perdute dopo la seconda elementare", "D. A dichiarare la frequentazione di circoli scacchisti"],
+    correct: 2
+  },
+  {
+    text: `Lieto ricordo risale a quando, anni orsono, ti avviasti con le Coglione verso una serata per voi inusuale: a bere vodka in discoteca, con un PR eccezionale! Nella serata tu spiccasti tanto da far breccia nel cuore del nuovo amico. Come tentò, affettuosamente, di battezzarti per conquistarti?`,
+    options: ["A. Fiore di campo", "B. Cioccolatino", "C. Micetta", "D. Giraffona"],
+    correct: 3
+  },
+  {
+    text: `Quando non ti fai chiamare Giraffona, chiedi di essere riconosciuta come "Pinta" in onore alla tua sete insaziabile di luppolo. Ma dicci ora, cara Pinta, a quanti centilitri corrisponde una pinta inglese?`,
+    options: ["A. 458", "B. 56,8", "C. 5,7", "D. 0,46"],
+    correct: 1
+  }
+];
+
+/* ======================= NAVIGAZIONE PAGINE ======================= */
+function showPage(id){
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0,0);
+}
+
+/* ======================= PAGINA 1 ======================= */
+function placeYesButton(){
+  const btn = document.getElementById('yesBtn');
+  const margin = 44;
+  const maxLeft = window.innerWidth - margin;
+  const minTop = window.innerHeight * 0.58; // zona "prato"
+  const maxTop = window.innerHeight - margin;
+  const left = margin + Math.random() * Math.max(10, maxLeft - margin);
+  const top = minTop + Math.random() * Math.max(10, maxTop - minTop);
+  btn.style.left = left + 'px';
+  btn.style.top = top + 'px';
+}
+placeYesButton();
+window.addEventListener('resize', placeYesButton);
+
+document.getElementById('yesBtn').addEventListener('click', () => {
+  loadQuizQuestion(0);
+  showPage('quizPage');
+});
+
+document.getElementById('noBtn').addEventListener('click', () => {
+  document.getElementById('noBtn').style.display = 'none';
+  document.getElementById('yesBtn').style.display = 'none';
+  document.getElementById('noText').style.display = 'block';
+});
+
+/* ======================= QUIZ ======================= */
+function loadQuizQuestion(index){
+  state.currentQuizIndex = index;
+  const q = questions[index];
+  document.getElementById('quizStep').textContent = `Domanda ${index + 1} di ${questions.length}`;
+  document.getElementById('quizQuestion').textContent = q.text;
+  document.getElementById('legoToast').style.display = 'none';
+
+  const answersDiv = document.getElementById('quizAnswers');
+  answersDiv.innerHTML = '';
+  q.options.forEach((opt, i) => {
+    const b = document.createElement('button');
+    b.className = 'answer-btn';
+    b.textContent = opt;
+    b.addEventListener('click', () => handleAnswer(i, b));
+    answersDiv.appendChild(b);
+  });
+}
+
+function handleAnswer(selectedIndex, btnEl){
+  const q = questions[state.currentQuizIndex];
+  const allButtons = document.querySelectorAll('#quizAnswers .answer-btn');
+  allButtons.forEach(b => b.disabled = true);
+
+  if (selectedIndex === q.correct){
+    btnEl.classList.add('correct');
+    state.legoCount++;
+    const toast = document.getElementById('legoToast');
+    toast.style.display = 'block';
+
+    setTimeout(() => {
+      const next = state.currentQuizIndex + 1;
+      if (next < questions.length){
+        loadQuizQuestion(next);
+      } else {
+        showPage('pageAssembly');
+        buildLegoPieces();
+      }
+    }, 1100);
+  } else {
+    btnEl.classList.add('wrong');
+    setTimeout(showScream, 500);
+  }
+}
+
+function showScream(){
+  const overlay = document.getElementById('screamOverlay');
+  overlay.classList.add('show');
+  setTimeout(() => {
+    overlay.classList.remove('show');
+    loadQuizQuestion(state.currentQuizIndex);
+  }, 10000);
+}
+
+/* ======================= PAGINA FINALE - LEGO ======================= */
+/* Disegno di riferimento (unità "design"), scalato secondo il fattore MINORE tra
+   larghezza e altezza reali dell'area di gioco, e "centrato" nell'area (letterboxing).
+   Questo evita che un pezzo vicino al bordo (es. le sfere alla base) finisca fuori
+   dall'area effettivamente disponibile su schermi con proporzioni diverse. */
+const BASE_W = 340;
+const BASE_H = 520;
+
+const legoDesign = {
+  shaftlow: { w:74,  h:140, cx:170, cy:390 },
+  shaftup:  { w:74,  h:104, cx:170, cy:268 },
+  head:     { w:120, h:72,  cx:170, cy:178 },
+  ballL:    { w:82,  h:82,  cx:110, cy:446 },
+  ballR:    { w:82,  h:82,  cx:230, cy:446 }
+};
+
+const lockedState = { shaftlow:false, shaftup:false, head:false, ballL:false, ballR:false };
+
+function getScaleAndOffset(){
+  const area = document.getElementById('assemblyArea');
+  const areaW = area.clientWidth;
+  const areaH = area.clientHeight;
+  const scale = Math.min(areaW / BASE_W, areaH / BASE_H);
+  const offsetX = (areaW - BASE_W * scale) / 2;
+  const offsetY = (areaH - BASE_H * scale) / 2;
+  return { scale, offsetX, offsetY };
+}
+
+function buildLegoPieces(){
+  const area = document.getElementById('assemblyArea');
+  area.innerHTML = '';
+  Object.keys(lockedState).forEach(k => lockedState[k] = false);
+  document.getElementById('successBox').style.display = 'none';
+
+  const { scale } = getScaleAndOffset();
+  const areaW = area.clientWidth;
+  const areaH = area.clientHeight;
+
+  const pieceDefs = [
+    { id:'shaftlow', cls:'piece-shaftlow', studs:3 },
+    { id:'shaftup',  cls:'piece-shaftup',  studs:3 },
+    { id:'head',     cls:'piece-head',     studs:0 },
+    { id:'ballL',    cls:'piece-ballL',    studs:0 },
+    { id:'ballR',    cls:'piece-ballR',    studs:0 }
+  ];
+
+  pieceDefs.forEach(p => {
+    const d = legoDesign[p.id];
+    const w = d.w * scale;
+    const h = d.h * scale;
+
+    const el = document.createElement('div');
+    el.className = `lego-piece ${p.cls}`;
+    el.id = 'piece-' + p.id;
+    el.style.width = w + 'px';
+    el.style.height = h + 'px';
+
+    if (p.studs > 0){
+      const studsWrap = document.createElement('div');
+      studsWrap.className = 'studs';
+      for (let i = 0; i < p.studs; i++){
+        const s = document.createElement('div');
+        s.className = 'stud';
+        studsWrap.appendChild(s);
+      }
+      el.appendChild(studsWrap);
+    }
+
+    const randX = 6 + Math.random() * Math.max(10, areaW - w - 12);
+    const randY = 6 + Math.random() * Math.max(10, areaH - h - 12);
+    el.style.left = randX + 'px';
+    el.style.top = randY + 'px';
+
+    area.appendChild(el);
+    makeDraggable(el, p.id);
+  });
+}
+
+function makeDraggable(el, pieceId){
+  let dragging = false;
+  let offsetX = 0, offsetY = 0;
+
+  el.addEventListener('pointerdown', (e) => {
+    if (lockedState[pieceId]) return;
+    dragging = true;
+    el.setPointerCapture(e.pointerId);
+    const rect = el.getBoundingClientRect();
+    offsetX = e.clientX - rect.left;
+    offsetY = e.clientY - rect.top;
+    el.style.zIndex = 50;
+  });
+
+  el.addEventListener('pointermove', (e) => {
+    if (!dragging) return;
+    const area = document.getElementById('assemblyArea');
+    const areaRect = area.getBoundingClientRect();
+    const w = el.offsetWidth, h = el.offsetHeight;
+    let newLeft = e.clientX - areaRect.left - offsetX;
+    let newTop = e.clientY - areaRect.top - offsetY;
+    newLeft = Math.max(-30, Math.min(areaRect.width - w + 30, newLeft));
+    newTop = Math.max(-30, Math.min(areaRect.height - h + 30, newTop));
+    el.style.left = newLeft + 'px';
+    el.style.top = newTop + 'px';
+
+    if (isNear(el, pieceId)) el.classList.add('snap-ready');
+    else el.classList.remove('snap-ready');
+  });
+
+  el.addEventListener('pointerup', () => {
+    if (!dragging) return;
+    dragging = false;
+    el.style.zIndex = 10;
+    el.classList.remove('snap-ready');
+    checkSnap(el, pieceId);
+  });
+}
+
+function isNear(el, pieceId){
+  const { scale, offsetX, offsetY } = getScaleAndOffset();
+  const d = legoDesign[pieceId];
+  const w = el.offsetWidth, h = el.offsetHeight;
+  const curLeft = parseFloat(el.style.left);
+  const curTop = parseFloat(el.style.top);
+  const curCx = curLeft + w / 2;
+  const curCy = curTop + h / 2;
+  const targetCx = offsetX + d.cx * scale;
+  const targetCy = offsetY + d.cy * scale;
+  const dist = Math.hypot(curCx - targetCx, curCy - targetCy);
+  const threshold = Math.max(40, 60 * scale);
+  return dist <= threshold;
+}
+
+function checkSnap(el, pieceId){
+  if (!isNear(el, pieceId)) return;
+  const { scale, offsetX, offsetY } = getScaleAndOffset();
+  const d = legoDesign[pieceId];
+  const w = el.offsetWidth, h = el.offsetHeight;
+  const targetCx = offsetX + d.cx * scale;
+  const targetCy = offsetY + d.cy * scale;
+
+  el.style.left = (targetCx - w / 2) + 'px';
+  el.style.top = (targetCy - h / 2) + 'px';
+  el.classList.add('locked');
+  lockedState[pieceId] = true;
+  checkAllLocked();
+}
+
+function checkAllLocked(){
+  const allLocked = Object.values(lockedState).every(v => v === true);
+  if (allLocked){
+    setTimeout(() => {
+      document.getElementById('successBox').style.display = 'block';
+      launchConfetti();
+      playVictoryTune();
+    }, 300);
+  }
+}
+
+/* ---- Confetti ---- */
+function launchConfetti(){
+  const colors = ['#FF6B6B','#FFD166','#06D6A0','#7B2CBF','#FF6FA0','#1E88E5','#F7B32B'];
+  const container = document.createElement('div');
+  container.style.position = 'fixed';
+  container.style.inset = '0';
+  container.style.pointerEvents = 'none';
+  container.style.zIndex = '1200';
+  container.style.overflow = 'hidden';
+  document.body.appendChild(container);
+
+  const count = 90;
+  for (let i = 0; i < count; i++){
+    const piece = document.createElement('div');
+    const size = 6 + Math.random() * 7;
+    const drift = Math.round(Math.random() * 200 - 100);
+    const duration = (2.2 + Math.random() * 1.8).toFixed(2);
+    const delay = (Math.random() * 0.5).toFixed(2);
+    const rotate = Math.round(Math.random() * 360);
+
+    piece.style.position = 'absolute';
+    piece.style.width = size + 'px';
+    piece.style.height = (size * 0.4) + 'px';
+    piece.style.background = colors[Math.floor(Math.random() * colors.length)];
+    piece.style.left = (Math.random() * 100) + 'vw';
+    piece.style.top = '-24px';
+    piece.style.borderRadius = '2px';
+    piece.style.opacity = '0.95';
+    piece.style.setProperty('--drift', drift + 'px');
+    piece.style.setProperty('--rot0', rotate + 'deg');
+    piece.style.animation = `confettiFall ${duration}s ease-in ${delay}s forwards`;
+
+    container.appendChild(piece);
+  }
+
+  setTimeout(() => { container.remove(); }, 4600);
+}
+
+/* ---- Musichetta di vittoria (generata via Web Audio, nessun file esterno) ---- */
+function playVictoryTune(){
+  try{
+    const Ctx = window.AudioContext || window.webkitAudioContext;
+    const ctx = new Ctx();
+    const notes = [523.25, 659.25, 783.99, 1046.50, 783.99, 1046.50]; // C5 E5 G5 C6 G5 C6
+    let t = ctx.currentTime + 0.05;
+
+    notes.forEach((freq, i) => {
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = 'triangle';
+      osc.frequency.value = freq;
+      gain.gain.setValueAtTime(0.0001, t);
+      gain.gain.exponentialRampToValueAtTime(0.3, t + 0.03);
+      gain.gain.exponentialRampToValueAtTime(0.0001, t + (i === notes.length - 1 ? 0.55 : 0.28));
+      osc.connect(gain).connect(ctx.destination);
+      osc.start(t);
+      osc.stop(t + 0.6);
+      t += i === notes.length - 2 ? 0.22 : 0.16;
+    });
+  } catch(e){
+    console.warn('Audio non disponibile in questo browser', e);
+  }
+}
+
+window.addEventListener('resize', () => {
+  const pa = document.getElementById('pageAssembly');
+  if (pa.classList.contains('active')){
+    const anyLocked = Object.values(lockedState).some(v => v === true);
+    if (!anyLocked) buildLegoPieces();
+  }
+});
+</script>
+</body>
+</html>
